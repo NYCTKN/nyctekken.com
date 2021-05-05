@@ -101,7 +101,7 @@ const links = [
 const EventsPage = ({ data }) => {
   const posts = data.allMarkdownRemark.nodes
   console.log(posts)
-  window.location.replace("https://www.twitch.tv/nycfurby")
+//   window.location.replace("https://www.twitch.tv/nycfurby")
   return (
     <main style={pageStyles}>
       <title>Posts Page</title>
