@@ -4,11 +4,13 @@ const { createFilePath } = require(`gatsby-source-filesystem`)
 exports.createPages = async ({ actions, graphql, reporter }) => {
     const { createPage } = actions
   
-    const blogPostTemplate = require.resolve(`./src/templates/blog-post.js`)
-  
-    const result = await graphql(`
+    const postTemplate = require.resolve(`./src/templates/post-template.js`)
+    const eventTemplate = require.resolve(`./src/templates/event-template.js`)
+
+    const allPosts = await graphql(`
       {
         allMarkdownRemark(
+          filter: {fileAbsolutePath: {regex: "/blog/"}}
           sort: { order: DESC, fields: [frontmatter___date] }
           limit: 1000
         ) {
@@ -25,12 +27,12 @@ exports.createPages = async ({ actions, graphql, reporter }) => {
     `)
   
     // Handle errors
-    if (result.errors) {
-      reporter.panicOnBuild(`Error while running GraphQL query.`)
+    if (allPosts.errors) {
+      reporter.panicOnBuild(`Error while running GraphQL query for your posts.`)
       return
     }
     
-    const posts = result.data.allMarkdownRemark.nodes
+    const posts = allPosts.data.allMarkdownRemark.nodes
 
     if (posts.length > 0) {
         posts.forEach((post, index) => {
@@ -39,7 +41,7 @@ exports.createPages = async ({ actions, graphql, reporter }) => {
 
         createPage({
             path: post.fields.slug,
-            component: blogPostTemplate,
+            component: postTemplate,
             context: {
             slug: post.fields.slug,
             previous,
@@ -48,6 +50,50 @@ exports.createPages = async ({ actions, graphql, reporter }) => {
         })
      })
     }
+
+    const allEvents = await graphql(`
+    {
+      allMarkdownRemark(
+        filter: {fileAbsolutePath: {regex: "/event/"}}
+        sort: { order: DESC, fields: [frontmatter___date] }
+        limit: 1000
+      ) {
+          nodes {
+              fields {
+                slug
+              }
+              frontmatter {
+                title
+              }
+          }
+      }
+    }
+  `)
+
+  // Handle errors
+  if (allEvents.errors) {
+    reporter.panicOnBuild(`Error while running GraphQL query your events.`)
+    return
+  }
+  
+  const events = allEvents.data.allMarkdownRemark.nodes
+
+  if (events.length > 0) {
+      events.forEach((event, index) => {
+      const previous = index === events.length - 1 ? null : events[index + 1]
+      const next = index === 0 ? null : events[index - 1]
+
+      createPage({
+          path: event.fields.slug,
+          component: eventTemplate,
+          context: {
+          slug: event.fields.slug,
+          previous,
+          next,
+          },
+      })
+   })
+  }
 }
 
 exports.onCreateNode = ({ node, actions, getNode }) => {
