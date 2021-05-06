@@ -8,7 +8,7 @@ public_folder: /img
 collections:
   - name: "blog"
     label: "Blog"
-    folder: "content/blog"
+    folder: "content/posts"
     create: true
     slug: "index"
     media_folder: ""
@@ -23,7 +23,7 @@ collections:
       - { label: "Body", name: "body", widget: "markdown" }
   - name: "event"
     label: "Event"
-    folder: "content/event"
+    folder: "content/events"
     create: true
     slug: "index"
     media_folder: ""

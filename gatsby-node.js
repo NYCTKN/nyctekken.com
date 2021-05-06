@@ -10,7 +10,7 @@ exports.createPages = async ({ actions, graphql, reporter }) => {
     const allPosts = await graphql(`
       {
         allMarkdownRemark(
-          filter: {fileAbsolutePath: {regex: "/blog/"}}
+          filter: {fileAbsolutePath: {regex: "/posts/"}}
           sort: { order: DESC, fields: [frontmatter___date] }
           limit: 1000
         ) {
@@ -54,7 +54,7 @@ exports.createPages = async ({ actions, graphql, reporter }) => {
     const allEvents = await graphql(`
     {
       allMarkdownRemark(
-        filter: {fileAbsolutePath: {regex: "/event/"}}
+        filter: {fileAbsolutePath: {regex: "/events/"}}
         sort: { order: DESC, fields: [frontmatter___date] }
         limit: 1000
       ) {
@@ -87,9 +87,9 @@ exports.createPages = async ({ actions, graphql, reporter }) => {
           path: event.fields.slug,
           component: eventTemplate,
           context: {
-          slug: event.fields.slug,
-          previous,
-          next,
+            slug: event.fields.slug,
+            previous,
+            next,
           },
       })
    })
@@ -99,13 +99,23 @@ exports.createPages = async ({ actions, graphql, reporter }) => {
 exports.onCreateNode = ({ node, actions, getNode }) => {
     const { createNodeField } = actions
 
-    if (node.internal.type === `MarkdownRemark`) {
-        const value = createFilePath({ node, getNode })
+    if (node.internal.type === `MarkdownRemark` && node.fileAbsolutePath.includes("posts")) {
+        const slug = createFilePath({ node, getNode, basePath: `content/posts` })
 
         createNodeField({
         name: `slug`,
         node,
-        value,
+        value: `/posts${slug}`,
+        })
+    }
+
+    if (node.internal.type === `MarkdownRemark` && node.fileAbsolutePath.includes("events")) {
+        const slug = createFilePath({ node, getNode, basePath: `content/posts` })
+
+        createNodeField({
+        name: `slug`,
+        node,
+        value: `/events${slug}`,
         })
     }
 }

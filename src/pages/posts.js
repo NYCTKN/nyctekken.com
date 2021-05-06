@@ -147,7 +147,7 @@ export default PostsPage
 
 export const pageQuery = graphql`
   query {
-    allMarkdownRemark(filter: {fileAbsolutePath: {regex: "/blog/"}}, sort: { fields: [frontmatter___date], order: DESC }) {
+    allMarkdownRemark(filter: {fileAbsolutePath: {regex: "/posts/"}}, sort: { fields: [frontmatter___date], order: DESC }) {
       nodes {
         excerpt
         fields {
